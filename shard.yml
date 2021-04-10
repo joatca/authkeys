@@ -1,0 +1,17 @@
+name: authkeys
+version: 0.1.0
+
+authors:
+  - Fraser McCrossan <fraser@mccrossan.ca>
+
+targets:
+  authkeys:
+    main: src/authkeys.cr
+
+crystal: 1.0.0
+
+dependencies:
+  ldap:
+    github: spider-gazelle/crystal-ldap
+
+license: MIT
