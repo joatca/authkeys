@@ -21,4 +21,6 @@ To build first [install Crystal](https://crystal-lang.org/install/) then install
 
     shards build --release
 
-The binary will be output to `bin/authkeys`.
+The binary will be output to `bin/authkeys`. Copy this somewhere sensible (for example `/usr/sbin/authkeys`) then add this line to `/etc/ssh/sshd_config`:
+
+    AuthorizedKeysCommand /usr/sbin/authkeys
