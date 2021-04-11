@@ -55,8 +55,7 @@ module Authkeys
       # manual doesn't say what happens if the AuthorizedKeysCommand exits non-zero so let's not do that unless
       # something really has exploded.
       if results.size > 0
-        result = results.first
-        (result["sshPublicKey"]? || [] of String).each do |key|
+        (results.first["sshPublicKey"]? || [] of String).each do |key|
           yield key
         end
       end
