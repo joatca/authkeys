@@ -80,20 +80,12 @@ module Authkeys
     def parse_config_file
       File.open(@config, "r") do |cf|
         data = INI.parse(cf)
-        unless data.has_key?("sssd")
-          raise "#{@config} doesn't look like an sssd config file"
-        end
-        if data["sssd"]?.try { |h| h["config_file_version"]? } != "2"
-          raise "#{@config} doesn't look like a version 2 sssd config file"
-        end
+        raise "#{@config} doesn't look like an sssd config file" unless data.has_key?("sssd")
+        raise "#{@config} doesn't look like a version 2 sssd config file" if data["sssd"]?.try { |h| h["config_file_version"]? } != "2"
         domain_section = "domain/#{@domain}"
-        unless data.has_key?(domain_section)
-          raise "domain #{@domain.inspect} not found in #{@config}"
-        end
+        raise "domain #{@domain.inspect} not found in #{@config}" unless data.has_key?(domain_section)
         dom = data[domain_section]
-        unless dom["id_provider"].to_s == "ldap"
-          raise "domain #{@domain} is not an ldap domain"
-        end
+        raise "domain #{@domain} is not an ldap domain" unless dom["id_provider"].to_s == "ldap"
         # extract parts of the config that we need
         @start_tls = dom["ldap_id_use_start_tls"].to_s.downcase == "true"
         # cast these all to string so that we get blank if it's nil; that's invalid so will trigger an error later
