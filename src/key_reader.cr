@@ -42,7 +42,8 @@ module Authkeys
     end
 
     def each_key(username : String)
-      filter = LDAP::Request::Filter.equal("uid", username) & LDAP::Request::FilterParser.parse(@config.filter)
+      filter = LDAP::Request::Filter.equal("uid", username)
+      filter &= LDAP::Request::FilterParser.parse(@config.filter) if @config.filter != ""
       results = @client.search(base: @config.base, filter: filter)
       # This *should* return an array of zero or one results since uids are supposed to be unique but we make no
       # allowances for the user passing in a username like 'foo*'; here we'll allow for more than one result but

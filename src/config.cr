@@ -87,12 +87,12 @@ module Authkeys
         dom = data[domain_section]
         raise "domain #{@domain} is not an ldap domain" unless dom["id_provider"].to_s == "ldap"
         # extract parts of the config that we need
-        @start_tls = dom["ldap_id_use_start_tls"].to_s.downcase == "true"
+        @start_tls = dom["ldap_id_use_start_tls"]?.to_s.downcase == "true"
         # cast these all to string so that we get blank if it's nil; that's invalid so will trigger an error later
-        @base = dom["ldap_search_base"].to_s
-        @uri = dom["ldap_uri"].to_s
+        @base = dom["ldap_search_base"]?.to_s
+        @uri = dom["ldap_uri"]?.to_s
         # similar, but a blank filter is legal
-        @filter = dom["ldap_access_filter"].to_s
+        @filter = dom["ldap_access_filter"]?.to_s
         # that's all the parameters we care about from the config file, now we process them
         uri = URI.parse(@uri)
         case uri.scheme
