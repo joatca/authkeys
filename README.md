@@ -10,6 +10,7 @@ read:
   * `ldap_uri`
   * `ldap_search_base`
   * `ldap_access_filter`
+  * `ldap_user_ssh_public_key`
   * `ldap_id_use_start_tls`
   * `ldap_default_bind_dn`
   * `ldap_default_authtok`
@@ -17,7 +18,7 @@ read:
 Unencrypted, START_TLS and SIMPLE_TLS are supported. (Although note that `sssd` does not support unencrypted connections.)
 
 In particular this means that `ldap_default_authtok_type` is ignored and thus the `obfuscated_password` type is
-not supported. SSH keys are expected to be in the attribute `sshPublicKey`.
+not supported.
 
 Initially written as a programming language comparison challenge/demonstration. LDAP access provided by
 [this Shard](https://github.com/spider-gazelle/crystal-ldap).
