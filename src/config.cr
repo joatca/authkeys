@@ -32,11 +32,13 @@ module Authkeys
     @server : String # server name, extracted from the URI
     @port : Int32 # port number to connect to
     @base : String # search base
+    @dn : String # the bind DN
+    @pw : String # the bind password
     @filter : String # access filter, that records must match or they won't be found
     @start_tls : Bool # whether to try STARTTLS
     @simple_tls : Bool # whether to try use a plain SSL socket
 
-    getter server, port, base, filter, start_tls, simple_tls
+    getter server, port, base, filter, start_tls, simple_tls, dn, pw
     
     def initialize
       @config = "/etc/sssd/sssd.conf"
@@ -46,6 +48,7 @@ module Authkeys
       # initialize just to keep the compiler happy
       @server = ""
       @port = 389
+      @dn = @pw = ""
       @start_tls = false
       @simple_tls = false
 
@@ -93,6 +96,8 @@ module Authkeys
         @uri = dom["ldap_uri"]?.to_s
         # similar, but a blank filter is legal
         @filter = dom["ldap_access_filter"]?.to_s
+        @dn = dom["ldap_default_bind_dn"]?.to_s # the bind DN, blank means don't bother authenticating
+        @pw = dom["ldap_default_authtok"]?.to_s # the bind password, ignored unless the bind DN is set
         # that's all the parameters we care about from the config file, now we process them
         uri = URI.parse(@uri)
         case uri.scheme
@@ -114,6 +119,10 @@ module Authkeys
         # ldap_default_authtok_type and ldap_default_authtok are currently unsupported, only anonymous bind is
         # supported
       end
+    end
+
+    def need_to_bind?
+      @dn != ""
     end
     
   end

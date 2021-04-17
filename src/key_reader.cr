@@ -39,6 +39,7 @@ module Authkeys
                       nil # either simple TLS or none at all
                     end
       @client = LDAP::Client.new(socket, tls_context)
+      @client.authenticate(@config.dn, @config.pw) if @config.need_to_bind? != ""
     end
 
     def each_key(username : String)
