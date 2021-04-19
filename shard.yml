@@ -13,5 +13,7 @@ crystal: 1.0.0
 dependencies:
   ldap:
     github: spider-gazelle/crystal-ldap
+  syslog:
+    github: chris-huxtable/syslog.cr
 
 license: MIT

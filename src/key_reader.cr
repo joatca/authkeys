@@ -17,12 +17,14 @@
 
 # this file connects to the LDAP stored in the config object and provides an each_key method to iterate through the keys
 
+require "./autherr"
+
 module Authkeys
 
   class KeyReader
 
     def initialize(@config : Config)
-      plain_socket = TCPSocket.new(@config.server, @config.port)
+      plain_socket = TCPSocket.new(@config.server, @config.port, dns_timeout = @config.timeout, connect_timeout = @config.timeout)
       socket = if @config.simple_tls
                  # in simple TLS mode we bring up a new socket with TLS initialized on the plain socket
                  tls = OpenSSL::SSL::Context::Client.new
@@ -33,7 +35,7 @@ module Authkeys
                  plain_socket
                end
       tls_context = if @config.start_tls # only true when .simple_tls is false so there's no code path that
-                                         # tries to start TLS when it's already up
+                      # tries to start TLS when it's already up
                       OpenSSL::SSL::Context::Client.new.tap { |s| s.verify_mode = OpenSSL::SSL::VerifyMode::NONE }
                     else
                       nil # either simple TLS or none at all
@@ -57,9 +59,16 @@ module Authkeys
       # manual doesn't say what happens if the AuthorizedKeysCommand exits non-zero so let's not do that unless
       # something really has exploded.
       if results.size > 0
-        (results.first[@config.attrib]? || [] of String).each do |key|
-          yield key
+        keys = (results.first[@config.attrib]?)
+        if keys.nil?
+          raise AuthErr.new(username, ErrType::NoData)
+        else
+          keys.each do |key|
+            yield key
+          end
         end
+      else
+        raise AuthErr.new(username, ErrType::NoUser)
       end
     end
     
