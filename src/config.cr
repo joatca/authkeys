@@ -51,7 +51,7 @@ module Authkeys
       # initialize just to keep the compiler happy
       @server = ""
       @port = 389
-      @timeout = 5
+      @timeout = 6
       @attrib = "sshPublicKey"
       @dn = @pw = ""
       @start_tls = false
@@ -106,6 +106,12 @@ module Authkeys
           @attrib = dom["ldap_user_ssh_public_key"]?.to_s unless dom["ldap_user_ssh_public_key"]?.nil?
           @dn = dom["ldap_default_bind_dn"]?.to_s # the bind DN, blank means don't bother authenticating
           @pw = dom["ldap_default_authtok"]?.to_s # the bind password, ignored unless the bind DN is set
+          # since this is an int with a default, only process it if the value exists
+          begin
+            @timeout = dom["ldap_search_timeout"].to_i if dom.has_key?("ldap_search_timeout")
+          rescue e : ArgumentError
+            raise AuthErr.new("ldap_search_timeout invalid: #{e.message}", ErrType::Config)
+          end
           # that's all the parameters we care about from the config file, now we process them
           uri = URI.parse(@uri)
           case uri.scheme
