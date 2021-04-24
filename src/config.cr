@@ -95,17 +95,18 @@ module Authkeys
           raise AuthErr.new("domain #{@domain.inspect} not found in #{@config}", ErrType::Config) unless data.has_key?(domain_section)
           dom = data[domain_section]
           raise AuthErr.new("domain #{@domain} is not an ldap domain", ErrType::Config) unless dom["id_provider"].to_s == "ldap"
-          # extract parts of the config that we need
-          @start_tls = dom["ldap_id_use_start_tls"]?.to_s.downcase == "true"
-          # cast these all to string so that we get blank if it's nil; that's invalid so will trigger an error later
-          @base = dom["ldap_search_base"]?.to_s
-          @uri = dom["ldap_uri"]?.to_s
-          # similar, but a blank filter is legal
-          @filter = dom["ldap_access_filter"]?.to_s
+          # extract parts of the config that we need; we use #try to avoid explicit nil checks or depending on
+          # nil.to_s == ""
+          dom["ldap_id_use_start_tls"]?.try { |t| @start_tls = t.downcase == "true" }
+          dom["ldap_search_base"]?.try { |b| @base = b }
+          dom["ldap_uri"]?.try { |u| @uri = u }
+          dom["ldap_access_filter"]?.try { |f| @filter = f }
           # we already have a default attribute so only overwrite it if it's in the config file
           dom["ldap_user_ssh_public_key"]?.try { |a| @attrib = a }
-          @dn = dom["ldap_default_bind_dn"]?.to_s # the bind DN, blank means don't bother authenticating
-          @pw = dom["ldap_default_authtok"]?.to_s # the bind password, ignored unless the bind DN is set
+          # the bind DN, blank means don't bother authenticating
+          dom["ldap_default_bind_dn"]?.try { |d| @dn = d }
+          # the bind password, ignored unless the bind DN is set
+          dom["ldap_default_authtok"]?.try { |p| @pw = p }
           # since this is an int with a default, only process it if the value exists
           begin
             dom["ldap_search_timeout"]?.try { |t| @timeout = t.to_i }
