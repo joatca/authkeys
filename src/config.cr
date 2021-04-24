@@ -64,10 +64,10 @@ module Authkeys
     def parse_commandline
       OptionParser.parse do |parser|
         parser.banner = "Usage: #{PROGRAM_NAME} [options] username...\n"
-        parser.on("-cFILE", "--config=FILE", "sssd configuration file (default #{@config}") { |c|
+        parser.on("-cFILE", "--config=FILE", "sssd configuration file (default #{@config})") { |c|
           @config = c
         }
-        parser.on("-dFILE", "--domain=DOMAIN", "which domain in the sssd config to use (default #{@domain}") { |d|
+        parser.on("-dFILE", "--domain=DOMAIN", "which domain in the sssd config to use (default #{@domain})") { |d|
           @domain = d
         }
         parser.on("-h", "--help", "Show this help") {
