@@ -15,13 +15,10 @@ read:
   * `ldap_default_bind_dn`
   * `ldap_default_authtok`
 
-Unencrypted, START_TLS and SIMPLE_TLS are supported. (Although note that `sssd` does not support unencrypted connections.)
+`ldap://`, `ldaps://` and `ldap://`-with-STARTTLS connections are supported. (Although note that `sssd` does not support `ldap://` connections without STARTTLS.) If an `ldaps://` URI is given then `ldap_id_use_start_tls` is ignored.
 
 In particular this means that `ldap_default_authtok_type` is ignored and thus the `obfuscated_password` type is
 not supported.
-
-Initially written as a programming language comparison challenge/demonstration. LDAP access provided by
-[this Shard](https://github.com/spider-gazelle/crystal-ldap).
 
 To build first [install Crystal](https://crystal-lang.org/install/) then install dependencies and build in one step:
 
@@ -32,4 +29,7 @@ then add this line to `/etc/ssh/sshd_config`:
 
     AuthorizedKeysCommand /usr/sbin/authkeys
 
-`authkeys` tries to never fail. Any errors are sent to syslog, not to standard error, even when run at the command line. The only thing printed on standard output is the list of SSH keys. On failures or when keys are missing nothing is printed, to make the output suitable for `sshd`. The only exception to this is `authkeys --help`.
+With the exception of the `--help` option, `authkeys` outputs only SSH keys to standard output, and nothing to standard error (except when it crashes, in which case please report a bug). Errors, if any, are sent to syslog, even when run at the command line. If errors result in a failure to fetch SSH keys then `authkeys` outputs nothing.
+
+Initially written as a programming language comparison challenge/demonstration. LDAP access provided by
+[this Shard](https://github.com/spider-gazelle/crystal-ldap).
