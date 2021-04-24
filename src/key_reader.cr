@@ -45,7 +45,7 @@ module Authkeys
     end
 
     def each_key(username : String)
-      filter = LDAP::Request::Filter.equal("uid", username)
+      filter = LDAP::Request::Filter.equal(@config.user_attrib, username)
       filter &= LDAP::Request::FilterParser.parse(@config.filter) if @config.filter != ""
       results = @client.search(base: @config.base, filter: filter)
       # This *should* return an array of zero or one results since uids are supposed to be unique but we make no
@@ -59,7 +59,7 @@ module Authkeys
       # manual doesn't say what happens if the AuthorizedKeysCommand exits non-zero so let's not do that unless
       # something really has exploded.
       if results.size > 0
-        keys = (results.first[@config.attrib]?)
+        keys = (results.first[@config.key_attrib]?)
         if keys.nil?
           raise AuthErr.new(username, ErrType::NoData)
         else

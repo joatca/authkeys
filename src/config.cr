@@ -36,12 +36,13 @@ module Authkeys
     @base : String # search base
     @dn : String # the bind DN
     @pw : String # the bind password
-    @attrib : String # which attribute contains ssh keys?
+    @user_attrib : String # which attribute contains usernames?
+    @key_attrib : String # which attribute contains ssh keys?
     @filter : String # access filter, that records must match or they won't be found
     @start_tls : Bool # whether to try STARTTLS
     @simple_tls : Bool # whether to try use a plain SSL socket
 
-    getter server, port, timeout, base, filter, attrib, start_tls, simple_tls, dn, pw
+    getter server, port, timeout, base, filter, user_attrib, key_attrib, start_tls, simple_tls, dn, pw
     
     def initialize
       @config = "/etc/sssd/sssd.conf"
@@ -52,7 +53,8 @@ module Authkeys
       @server = ""
       @port = 389
       @timeout = 6
-      @attrib = "sshPublicKey"
+      @user_attrib = "uid"
+      @key_attrib = "sshPublicKey"
       @dn = @pw = ""
       @start_tls = false
       @simple_tls = false
@@ -101,8 +103,9 @@ module Authkeys
           dom["ldap_search_base"]?.try { |b| @base = b }
           dom["ldap_uri"]?.try { |u| @uri = u }
           dom["ldap_access_filter"]?.try { |f| @filter = f }
-          # we already have a default attribute so only overwrite it if it's in the config file
-          dom["ldap_user_ssh_public_key"]?.try { |a| @attrib = a }
+          # we already have default attributes so only overwrite them if in the config file
+          dom["ldap_user_name"]?.try { |u| @user_attrib = u }
+          dom["ldap_user_ssh_public_key"]?.try { |k| @key_attrib = k }
           # the bind DN, blank means don't bother authenticating
           dom["ldap_default_bind_dn"]?.try { |d| @dn = d }
           # the bind password, ignored unless the bind DN is set
