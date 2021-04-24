@@ -103,12 +103,12 @@ module Authkeys
           # similar, but a blank filter is legal
           @filter = dom["ldap_access_filter"]?.to_s
           # we already have a default attribute so only overwrite it if it's in the config file
-          @attrib = dom["ldap_user_ssh_public_key"]?.to_s unless dom["ldap_user_ssh_public_key"]?.nil?
+          dom["ldap_user_ssh_public_key"]?.try { |a| @attrib = a }
           @dn = dom["ldap_default_bind_dn"]?.to_s # the bind DN, blank means don't bother authenticating
           @pw = dom["ldap_default_authtok"]?.to_s # the bind password, ignored unless the bind DN is set
           # since this is an int with a default, only process it if the value exists
           begin
-            @timeout = dom["ldap_search_timeout"].to_i if dom.has_key?("ldap_search_timeout")
+            dom["ldap_search_timeout"]?.try { |t| @timeout = t.to_i }
           rescue e : ArgumentError
             raise AuthErr.new("ldap_search_timeout invalid: #{e.message}", ErrType::Config)
           end
@@ -125,7 +125,7 @@ module Authkeys
           else
             raise AuthErr.new("#{@uri.inspect} is not an LDAP URI", ErrType::Config)
           end
-          @port = uri.port.as(Int32) unless uri.port.nil? # maybe override the port number
+          uri.port.try { |p| @port = p.as(Int32) }
           @server = uri.host.to_s # again, force nils to blanks, check below
           # for now we'll ignore all the other URI components
           raise AuthErr.new("no server name found in URI #{@uri.inspect}", ErrType::Config) if @server == ""
