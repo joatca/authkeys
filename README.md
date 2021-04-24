@@ -31,8 +31,7 @@ To use first [install Crystal](https://crystal-lang.org/install/) then fetch dep
 
     shards build --release
 
-The executable will be written to `bin/authkeys`. Copy this somewhere sensible (for example `/usr/sbin/authkeys`)
-then add this line to `/etc/ssh/sshd_config`:
+At the time of writing the Crystal compiler is quite slow when compiling in release mode, so be patient. The executable will be written to `bin/authkeys`. Copy this somewhere sensible (for example `/usr/sbin/authkeys`) then add this line to `/etc/ssh/sshd_config`:
 
     AuthorizedKeysCommand /usr/sbin/authkeys
 
