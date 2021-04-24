@@ -32,4 +32,4 @@ then add this line to `/etc/ssh/sshd_config`:
 
     AuthorizedKeysCommand /usr/sbin/authkeys
 
-`authkeys` tries to never fail. Any errors are sent to syslog, not to stderr, even when run at the command line. The only thing printed on standard output is the list SSH keys. On failures on when keys are missing nothing is printed, to make the output suitable for `sshd`. The only exception to this is `authkeys --help`.
+`authkeys` tries to never fail. Any errors are sent to syslog, not to standard error, even when run at the command line. The only thing printed on standard output is the list SSH keys. On failures on when keys are missing nothing is printed, to make the output suitable for `sshd`. The only exception to this is `authkeys --help`.
