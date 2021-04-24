@@ -16,4 +16,4 @@ dependencies:
   syslog:
     github: chris-huxtable/syslog.cr
 
-license: MIT
+license: GPL3
