@@ -126,7 +126,7 @@ module Authkeys
           else
             raise AuthErr.new("#{@uri.inspect} is not an LDAP URI", ErrType::Config)
           end
-          uri.port.try { |p| @port = p.as(Int32) }
+          uri.port.try { |p| @port = p }
           @server = uri.host.to_s # again, force nils to blanks, check below
           # for now we'll ignore all the other URI components
           raise AuthErr.new("no server name found in URI #{@uri.inspect}", ErrType::Config) if @server == ""
